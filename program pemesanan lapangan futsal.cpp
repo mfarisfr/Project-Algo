@@ -1,9 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-ifstream dtout;
-ofstream dtin;
-
 void admin();
 void qsort(int first,int last);
 void pelanggan();
@@ -19,6 +16,7 @@ typedef struct
     double hargalap, retinglap;
 }data;
 data lap[1000];
+
 typedef struct
 {
     char namapelanggan[20], tanggal[20], namalapangan[20], jslapangan[20];
@@ -26,10 +24,10 @@ typedef struct
 }bo;
 bo king[100];
 
-FILE *a1;
-int x, a, jumlap, i, d, pil, hargalap, retinglap, ph, j,wkt, jumbok, pesanan=0;
+FILE *a1, *a2;
+int x, a, jumlap, i, d, pil, hargalap, retinglap, ph, j, k, wkt, jumbok;
 char y, b, c, e, f, g, h;
-string usser, password, namalap, jenislap, nmlap,nmpel,tgl,jnlap;
+string usser, password, namalap, jenislap;
 bool found;
 
 int main()
@@ -81,6 +79,13 @@ void admin()
 
 void pelanggan()
 {
+    a2=fopen("Lapangan.txt","r");
+    i=0;
+    while(feof(a2)==NULL)
+    {
+        fread(&lap[i],sizeof(lap[i]),1,a2);
+        i++;
+    }
     do{
 	cout << setw(26) << setfill(' ') << "MENU PELANGGAN : " << endl;
 	cout << "1. Daftar lapangan\n2. Cari lapangan\n3. Urut lapangan\n4. Booking\n";
@@ -94,14 +99,8 @@ void pelanggan()
             cout << setw(60) << setfill('=') << "" << endl;
             cout << "No  Nama\t\tJenis\tHarga\t\tReting\n";
             cout << setw(60) << setfill('-') << "" << endl;
-            dtout.open ("lapangan.txt");
-            dtout >> jumlap;
             for(i=0; i<jumlap; i++)
             {
-            	dtout >> lap[i].namalap;
-                dtout >> lap[i].jenislap;
-                dtout >> lap[i].hargalap;
-                dtout >> lap[i].retinglap;
                 cout << i+1 << "  ";
                 cout << lap[i].namalap << "\t\t";
                 cout << lap[i].jenislap << "\t";
@@ -109,7 +108,6 @@ void pelanggan()
                 cout << lap[i].retinglap << endl;
             }
             cout << setw(60) << setfill('=') << "" << endl;
-            dtout.close();
         }
         break;
         case 2: cari();
@@ -119,7 +117,8 @@ void pelanggan()
         case 4: boking();
         break;
 	}
-	cout << "Kembali ke menu pelanggan? (y/t) "; cin >> f;
+    fclose(a2);
+	cout << "\nKembali ke menu pelanggan? (y/t) "; cin >> f;
 	cout << endl;
 	}while(f=='y' || f=='Y');
 }
@@ -136,9 +135,8 @@ void menuadmin()
     {
         case 1:
         {
-        	dtin.open ("lapangan.txt");
+            a2=fopen("Lapangan.txt","a");
             cout << "\nMasukkan jumlah lapangan : "; cin >> jumlap;
-            dtin << jumlap << endl;
             for(i=0; i<jumlap; i++)
             {
                 cout << "\nLapangan " << i+1 << endl;
@@ -146,29 +144,27 @@ void menuadmin()
                 cout << "Jenis Lapangan\t : "; cin >> lap[i].jenislap;
                 cout << "Harga\t\t : "; cin >> lap[i].hargalap;
                 cout << "Reting\t\t : "; cin >> lap[i].retinglap;
-                dtin << lap[i].namalap << endl;
-                dtin << lap[i].jenislap << endl;
-                dtin << lap[i].hargalap << endl;
-                dtin << lap[i].retinglap << endl;
+                fwrite(&lap[i],sizeof(lap[i]),1,a2);
             }
-    		dtin.close();
+            fclose(a2);
     	}
         break;
         case 2:
         {
+            a2=fopen("Lapangan.txt","r");
+            i=0;
+            while(feof(a2)==NULL)
+            {
+                fread(&lap[i],sizeof(lap[i]),1,a2);
+                i++;
+            }
             cout << setw(60) << setfill('=') << "" << endl;
             cout << setw(36) << setfill(' ') << "DAFTAR LAPANGAN" << endl;
             cout << setw(60) << setfill('=') << "" << endl;
             cout << "No  Nama\t\tJenis\tHarga\t\tReting\n";
             cout << setw(60) << setfill('-') << "" << endl;
-            dtout.open ("lapangan.txt");
-            dtout >> jumlap;
             for(i=0; i<jumlap; i++)
             {
-            	dtout >> lap[i].namalap;
-                dtout >> lap[i].jenislap;
-                dtout >> lap[i].hargalap;
-                dtout >> lap[i].retinglap;
                 cout << i+1 << "  ";
                 cout << lap[i].namalap << "\t\t";
                 cout << lap[i].jenislap << "\t";
@@ -176,7 +172,7 @@ void menuadmin()
                 cout << lap[i].retinglap << endl;
             }
             cout << setw(60) << setfill('=') << "" << endl;
-            dtout.close();
+            fclose(a2);
         }
         break;
         case 3:
@@ -186,32 +182,22 @@ void menuadmin()
         break;
         default: cout << "Input Salah\n";
     }
-    cout << "\nApakah ingin mengulang? (y/t)\n"; cin >> b;
+    cout << "\nApakah ingin mengulang? (y/t)"; cin >> b;
     cout << endl;
     }while(b=='y' || b=='Y');
 }
 
 void cari()
 {
-	dtout.open("lapangan.txt");
-	dtout >> jumlap;
-    for(i=0; i<jumlap; i++)
-    {
-       	dtout >> lap[i].namalap;
-        dtout >> lap[i].jenislap;
-        dtout >> lap[i].hargalap;
-        dtout >> lap[i].retinglap;
-	}
 	do{
-    cout << "\nMenu : ";
-    cout << "\nCari Lapangan : \n";
+    cout << "\nMENU CARI LAPANGAN : \n";
     cout << "1. Nama Lapangan\n2. Jenis Lapnagan\n3. Harga\n4. Reting\n";
-    cout << "Masukkan pilihan : "; cin >> pil;
+    cout << "Pilihan (1...4) = "; cin >> pil;
     switch(pil)
     {
         case 1:
         {
-    		cout << "Masukkan Nama Lapangan\t: "; cin.ignore(); getline(cin,namalap);
+    		cout << "\nMasukkan Nama Lapangan\t: "; cin.ignore(); getline(cin,namalap);
     		found = false;
     		for(i=0; i<jumlap; i++)
     		{
@@ -230,7 +216,7 @@ void cari()
         break;
         case 2:
         {
-        	cout << "Masukkan Jenis Lapangan\t: "; cin.ignore(); getline(cin,jenislap);
+        	cout << "\nMasukkan Jenis Lapangan\t: "; cin.ignore(); getline(cin,jenislap);
     		found = false;
     		for(i=0; i<jumlap; i++)
     		{
@@ -249,7 +235,7 @@ void cari()
         break;
         case 3:
         {
-        	cout << "Masukkan Harga Lapangan\t: "; cin >> hargalap;
+        	cout << "\nMasukkan Harga Lapangan\t: "; cin >> hargalap;
     		found = false;
     		for(i=0; i<jumlap; i++)
     		{
@@ -268,7 +254,7 @@ void cari()
         break;
         case 4:
         {
-        	cout << "Masukkan Reting Lapangan\t: "; cin >> retinglap;
+        	cout << "\nMasukkan Reting Lapangan\t: "; cin >> retinglap;
     		found = false;
     		for(i=0; i<jumlap; i++)
     		{
@@ -287,36 +273,26 @@ void cari()
         break;
         default: cout << "Input Salah\n";
     }
-    dtout.close();
-    cout << "Apakah Anda ingin mengulang? (y/t)"; cin >> e;
+    //dtout.close();
+    cout << "\nApakah Anda ingin mengulang?(y/t)"; cin >> e;
     cout << endl;
     }while(e=='y' || e=='Y');
 }
 
 void urut()
 {
-	dtout.open("lapangan.txt");
-	dtout >> jumlap;
-    for(i=0; i<jumlap; i++)
-    {
-       	dtout >> lap[i].namalap;
-        dtout >> lap[i].jenislap;
-        dtout >> lap[i].hargalap;
-        dtout >> lap[i].retinglap;
-	}
 	do
 	{
-    cout << "\nMenu : ";
-    cout << "\nUrut Lapangan : \n";
+    cout << "\nMENU URUT LAPANGAN : \n";
 	cout << "1. Berdasarkan Harga\n2. Berdasarkan Rating\n";
-	cout << "Pilih (1..2) "; cin >> ph; cout << endl;
+	cout << "Pilih (1..2) = "; cin >> ph; cout << endl;
 	switch(ph)
 	{
 		case 1:
 		{
 			cout << "Berdasarkan Harga \n";
 			cout << "Dari Harga Tertinggi(h) atau Dari Harga Terendah(L)\n";
-			cout << "Pilih (H/L) ";cin >> h;
+			cout << "Pilih (H/L) = ";cin >> h;
 			data temp;
 	        if(h=='l'||h=='L')
 			{
@@ -332,7 +308,9 @@ void urut()
             			}
         			}
     			}
-    			cout << "\tUrutan Harga Dari yang Terendah "<<endl;
+    			cout << endl;
+    			cout << setw(60) << setfill('=') << "" << endl;
+    			cout << "\t   Urutan Harga Dari yang Terendah "<<endl;
     			cout << setw(60) << setfill('=') << "" << endl;
             	cout << setw(36) << setfill(' ') << "DAFTAR LAPANGAN" << endl;
             	cout << setw(60) << setfill('=') << "" << endl;
@@ -384,12 +362,13 @@ void urut()
 		{
     		cout << "Berdasarkan Rating \n";
 			cout << "Dari Rating Tertinggi(h) atau Dari Rating Terendah(L)\n";
-			cout << "Pilih (H/L) ";cin >> h;
+			cout << "Pilih (H/L) = ";cin >> h;
 			data temp;
 	        if(h=='l'||h=='L')
 			{
                 qsort(0,jumlap-1);
-    			cout << "\tUrutan Rating Dari yang Terendah "<<endl;
+                cout << setw(60) << setfill('=') << "" << endl;
+    			cout << "\t   Urutan Rating Dari yang Terendah "<<endl;
     			cout << setw(60) << setfill('=') << "" << endl;
             	cout << setw(36) << setfill(' ') << "DAFTAR LAPANGAN" << endl;
             	cout << setw(60) << setfill('=') << "" << endl;
@@ -419,6 +398,7 @@ void urut()
             			}
         			}
     			}
+    			cout << endl;
     			cout << "\tUrutan Rating dari yang Tertinggi "<<endl;
     			cout << setw(60) << setfill('=') << "" << endl;
             	cout << setw(36) << setfill(' ') << "DAFTAR LAPANGAN" << endl;
@@ -438,9 +418,8 @@ void urut()
 		break;
 		}
 	}
-	cout << "Mau Mengulang Lagi ?(y/t)";cin >> g;
+	cout << "\nApakah Anda ingin mengulang?(y/t)";cin >> g;
 	}while(g=='y'||g=='Y');
-	dtout.close();
 }
 
 void qsort(int first,int last)
@@ -468,49 +447,62 @@ void qsort(int first,int last)
 void boking()
 {
 	a1=fopen("Boking.txt","a");
-	cout << "MENU BOKING \n";
-	cout << "Jumlah Booking : "; cin >> jumbok;
-	pesanan += jumbok;
-	//fwrite(&pesanan,sizeof(pesanan),1,a1);
-	for(i=0; i<jumbok; i++)
+	cout << "\nMENU BOOKING :\n1. Jadwal lapangan\n2. Booking\n";
+	cout << "Pilihan(1...2) = "; cin >> k;
+	if (k==1)
     {
-        cout << "Booking " << i+1 << endl;
-        cout << "Masukkan Nama Anda\t: "; cin.ignore(); cin.getline(king[i].namapelanggan,20);
-        cout << "Masukkan Nama Lapangan\t: "; cin.getline(king[i].namalapangan,20);
-        cout << "Masukkan Jenis Lapangan\t: "; cin.getline(king[i].jslapangan,20);
-        cout << "Masukkan Tanggal\t: ";cin.getline(king[i].tanggal, 20);
-        cout << "Masukkan Jam\t\t: ";cin>>king[i].jam;
-        fwrite(&king[i],sizeof(king[i]),1,a1);
+        databoking();
     }
+	else if(k==2)
+    {
+        cout << "\nJumlah Booking lapangan : "; cin >> jumbok;
+        for(i=0; i<jumbok; i++)
+        {
+            cout << "\nBooking " << i+1 << endl;
+            cout << "Masukkan Nama Anda\t: "; cin.ignore(); cin.getline(king[i].namapelanggan,20);
+            cout << "Masukkan Nama Lapangan\t: "; cin.getline(king[i].namalapangan,20);
+            cout << "Masukkan Jenis Lapangan\t: "; cin.getline(king[i].jslapangan,20);
+            cout << "Masukkan Tanggal\t: ";cin.getline(king[i].tanggal, 20);
+            cout << "Masukkan Jam\t\t: ";cin>>king[i].jam;
+            fwrite(&king[i],sizeof(king[i]),1,a1);
+        }
+    }
+    else {cout << "Input salah";}
+    /*for(i=0; i<jumlap; i++)
+    {
+        if (king[i].namalapangan!=lap[i].namalap && king[i].jslapangan!=lap[i].jenislap)
+        {
+            remove(&king[i]);
+            cout << "Data Lapangan tidak ada\n";
+        }
+    }*/
     fclose(a1);
 }
 
 void databoking()
 {
     a1=fopen("Boking.txt","r");
-	cout << "DATA BOKING \n";
-	//fread(&pesanan,sizeof(pesanan),1,a1);
-        i=0;
-        while(feof(a1)==NULL)
-        {
-            fread(&king[i],sizeof(king[i]),1,a1);
-            i++;
-        }
-        cout << setw(70) << setfill('=') << "" << endl;
-        cout << setw(40) << setfill(' ') << "DATA BOOKING" << endl;
-        cout << setw(70) << setfill('-') << "" << endl;
-        cout << "No  Nama Pemesan\tLapangan\tJenis\tTanggal\tJam\n";
-        cout << setw(70) << setfill('-') << "" << endl;
-        for(j=0; j<i-1; j++)
-        {
-            cout << j+1 << "   ";
-            cout << king[j].namapelanggan << "\t\t";
-            cout << king[j].namalapangan << "\t";
-            cout << king[j].jslapangan << "\t\t";
-            cout << king[j].tanggal << "\t";
-            cout << king[j].jam << "\t\n";
-        }
-        cout << endl;
-        cout << setw(70) << setfill('=') << "" << endl;
+    i=0;
+    while(feof(a1)==NULL)
+    {
+        fread(&king[i],sizeof(king[i]),1,a1);
+        i++;
+    }
+    cout << setw(70) << setfill('=') << "" << endl;
+    cout << setw(40) << setfill(' ') << "DATA BOOKING" << endl;
+    cout << setw(70) << setfill('-') << "" << endl;
+    cout << "No  Nama Pemesan\tLapangan\tJenis\tTanggal\tJam\n";
+    cout << setw(70) << setfill('-') << "" << endl;
+    for(j=0; j<i-1; j++)
+    {
+        cout << j+1 << "   ";
+        cout << king[j].namapelanggan << "\t\t";
+        cout << king[j].namalapangan << "\t\t";
+        cout << king[j].jslapangan << "\t\t";
+        cout << king[j].tanggal << "\t";
+        cout << king[j].jam << "\t\n";
+    }
+    cout << endl;
+    cout << setw(70) << setfill('=') << "" << endl;
     fclose(a1);
 }
